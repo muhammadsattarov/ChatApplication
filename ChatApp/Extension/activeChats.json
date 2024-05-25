@@ -1,0 +1,35 @@
+
+
+[
+    {
+        "userName": "Bob River",
+        "userImageString": "person2",
+        "lastMessage": "Hello, have are you?",
+        "id": 1
+    },
+    {
+        "userName": "Jack Btack",
+        "userImageString": "person3",
+        "lastMessage": "Hello, have are you?",
+        "id": 2
+    },
+    {
+        "userName": "Misha Red",
+        "userImageString": "person8",
+        "lastMessage": "Hello, have are you?",
+        "id": 3
+    },
+    {
+        "userName": "Alex Brown",
+        "userImageString": "person3",
+        "lastMessage": "Hello, have are you?",
+        "id": 4
+    },
+    {
+        "userName": "Robert Martin",
+        "userImageString": "person2",
+        "lastMessage": "Hello, have are you?",
+        "id": 5
+    }
+]
+
