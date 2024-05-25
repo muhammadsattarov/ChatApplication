@@ -24,12 +24,14 @@ class SignUpViewController: UIViewController {
     private let signUpButton = UIButton(title: "Sign Up", titleColor: .white, backgroundColor: .darkColor)
     
     private let loginButton: UIButton = {
-        let btn = UIButton(type: .system)
+        let btn = UIButton()
         btn.setTitle("Login", for: .normal)
         btn.setTitleColor(.redColor, for: .normal)
         btn.titleLabel?.font = .avenir20()
         return btn
     }()
+    
+    weak var delegate: AuthNavigationDelegate?
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -40,6 +42,35 @@ class SignUpViewController: UIViewController {
     
     private func setupViews() {
         view.backgroundColor = .white
+        signUpButton.addTarget(self, action: #selector(didTapSignUpButton), for: .touchUpInside)
+        loginButton.addTarget(self, action: #selector(didTapLoginButton), for: .touchUpInside)
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapView)))
+    }
+    
+    // MARK: - Actions
+    @objc private func didTapSignUpButton() {
+        AuthService.shared.register(email: emailField.text,
+                                    password: passwordField.text,
+                                    confirmpassword: confirmPasswordField.text) { result in
+            switch result {
+            case .success(let user):
+                self.showAlert(with: "Success!", and: "You are register.") {
+                    self.present(SetupProfileViewController(currentUser: user), animated: true)
+                }
+            case .failure(let error):
+                self.showAlert(with: "Error!", and: error.localizedDescription)
+            }
+        }
+    }
+    
+    @objc private func didTapLoginButton() {
+        dismiss(animated: true) {
+            self.delegate?.toLoginVC()
+        }
+    }
+    
+    @objc private func didTapView() {
+        view.endEditing(true)
     }
 }
 
@@ -67,7 +98,7 @@ extension SignUpViewController {
         view.addSubview(stackView)
         view.addSubview(bottomStack)
         
-        let topSpace: CGFloat = view.frame.height / 5.3
+        let topSpace: CGFloat = view.frame.height / 8
         NSLayoutConstraint.activate([
             headerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: topSpace),
             headerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -87,6 +118,16 @@ extension SignUpViewController {
 }
 
 
+
+extension UIViewController {
+    func showAlert(with title: String, and message: String, completion: @escaping () -> Void = {}) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            completion()
+        }))
+        present(alert, animated: true)
+    }
+}
 
 
 

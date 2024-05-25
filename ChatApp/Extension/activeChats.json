@@ -3,33 +3,45 @@
 [
     {
         "userName": "Bob River",
-        "userImageString": "person2",
+        "userImageString": "person1",
         "lastMessage": "Hello, have are you?",
         "id": 1
     },
     {
         "userName": "Jack Btack",
-        "userImageString": "person3",
+        "userImageString": "person2",
         "lastMessage": "Hello, have are you?",
         "id": 2
     },
     {
         "userName": "Misha Red",
-        "userImageString": "person8",
+        "userImageString": "person3",
         "lastMessage": "Hello, have are you?",
         "id": 3
     },
     {
         "userName": "Alex Brown",
-        "userImageString": "person3",
+        "userImageString": "person4",
         "lastMessage": "Hello, have are you?",
         "id": 4
     },
     {
         "userName": "Robert Martin",
-        "userImageString": "person2",
+        "userImageString": "person5",
         "lastMessage": "Hello, have are you?",
         "id": 5
+    },
+    {
+        "userName": "Alex Brown",
+        "userImageString": "person4",
+        "lastMessage": "Hello, have are you?",
+        "id": 6
+    },
+    {
+        "userName": "Robert Martin",
+        "userImageString": "person5",
+        "lastMessage": "Hello, have are you?",
+        "id": 7
     }
 ]
 

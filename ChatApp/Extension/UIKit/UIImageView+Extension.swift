@@ -16,3 +16,11 @@ extension UIImageView {
         self.contentMode = contentMode
     }
 }
+
+extension UIImageView {
+    func setupColor(tintColor: UIColor) {
+        let templateImage = self.image?.withRenderingMode(.alwaysTemplate)
+        self.image = templateImage
+        self.tintColor = tintColor
+    }
+}

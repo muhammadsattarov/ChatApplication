@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+protocol AuthNavigationDelegate: AnyObject {
+    func toSignUpVC()
+    func toLoginVC()
+}

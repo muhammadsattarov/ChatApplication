@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+import GoogleSignIn
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -18,7 +20,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let scene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: scene)
-        window?.rootViewController = MailTabBarController()
+        
+        if let user = Auth.auth().currentUser {
+            FirestoreService.shared.getUserData(user: user) { result in
+                switch result {
+                case .success(let muser):
+                    let tabBar = MainTabBarController(currentUser: muser)
+                    tabBar.modalPresentationStyle = .fullScreen
+                    self.window?.rootViewController = tabBar
+                case .failure(_):
+                    self.window?.rootViewController = AuthViewController()
+                }
+            }
+        } else {
+            window?.rootViewController = AuthViewController()
+        }
         window?.makeKeyAndVisible()
     }
 

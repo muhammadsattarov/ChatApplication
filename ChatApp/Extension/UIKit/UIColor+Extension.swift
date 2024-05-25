@@ -20,4 +20,12 @@ extension UIColor {
     static var darkColor: UIColor {
         return #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
     }
+    
+    static var TextFildColor: UIColor {
+        return #colorLiteral(red: 0.9019607843, green: 0.9019607843, blue: 0.9019607843, alpha: 1)
+    }
+    
+    static var purpleColor: UIColor {
+        return #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
+    }
 }

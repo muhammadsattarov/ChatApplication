@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GoogleSignIn
 
 class AuthViewController: UIViewController {
     
@@ -20,6 +21,9 @@ class AuthViewController: UIViewController {
     private let emailButton = UIButton(title: "Email", titleColor: .white, backgroundColor: .darkColor)
     private let loginButton = UIButton(title: "Login", titleColor: .redColor, backgroundColor: .white, isShadow: true)
     
+    let signupVC = SignUpViewController()
+    let loginVC = LoginViewController()
+    
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,10 +34,45 @@ class AuthViewController: UIViewController {
     private func setupViews() {
         googleButton.customizedGoogleButton()
         view.backgroundColor = .white
+        loginVC.delegate = self
+        signupVC.delegate = self
+        emailButton.addTarget(self, action: #selector(didTapEmailButton), for: .touchUpInside)
+        loginButton.addTarget(self, action: #selector(didTaploginButton), for: .touchUpInside)
+        googleButton.addTarget(self, action: #selector(didTapgoogleButton), for: .touchUpInside)
     }
 
+    // MARK: - Actions
+    @objc private func didTapEmailButton() {
+        present(signupVC, animated: true)
+    }
+    
+    @objc private func didTaploginButton() {
+        present(loginVC, animated: true)
+    }
+    
+    @objc private func didTapgoogleButton() {
+        AuthService.shared.loginWithGoogle(viewController: self) { result in
+            switch result {
+            case .success(let user):
+                FirestoreService.shared.getUserData(user: user) { result in
+                    switch result {
+                    case .success(let muser):
+                        let tabbar = MainTabBarController(currentUser: muser)
+                        tabbar.modalPresentationStyle = .fullScreen
+                        self.present(tabbar, animated: true)
+                    case .failure(let error):
+                        let vc = SetupProfileViewController(currentUser: user)
+                        self.present(vc, animated: true)
+                    }
+                }
+            case .failure(let error):
+                self.showAlert(with: "Error!", and: error.localizedDescription)
+            }
+        }
+    }
 }
 
+// MARK: - Constrains
 extension AuthViewController {
     private func setConstrains() {
         logoImage.translatesAutoresizingMaskIntoConstraints = false
@@ -61,11 +100,22 @@ extension AuthViewController {
     }
 }
 
+// MARK: - AuthNavigatingDelegate
+extension AuthViewController: AuthNavigationDelegate {
+    func toSignUpVC() {
+        present(signupVC, animated: true)
+    }
+    
+    func toLoginVC() {
+        present(loginVC, animated: true)
+    }
+}
 
 
-
-
-
+// MARK: -
+extension AuthViewController {
+    
+}
 
 
 

@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+import SDWebImage
 
 class SetupProfileViewController: UIViewController {
     
@@ -20,9 +22,27 @@ class SetupProfileViewController: UIViewController {
     private let fullnameField = OneLineTextField(font: .avenir20())
     private let aboutMeField = OneLineTextField(font: .avenir20())
     
-    private let segmentedControl = UISegmentedControl(first: "Male", second: "Female")
+    private let genderSegmentedControl = UISegmentedControl(first: "Male", second: "Female")
     
     private let goToChatButton = UIButton(title: "Go to chats!", titleColor: .white, backgroundColor: .darkColor)
+    
+    private let currentUser: User
+    
+    init(currentUser: User) {
+        self.currentUser = currentUser
+        super.init(nibName: nil, bundle: nil)
+        if let username = currentUser.displayName {
+            fullnameField.text = username
+        }
+        
+        if let userImage = currentUser.photoURL {
+            fillImageView.circleImageView.sd_setImage(with: userImage)
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -33,6 +53,49 @@ class SetupProfileViewController: UIViewController {
     
     private func setupViews() {
         view.backgroundColor = .white
+        goToChatButton.addTarget(self, action: #selector(didTapGoToChatButton), for: .touchUpInside)
+        fillImageView.plusButton.addTarget(self, action: #selector(didTapPlusButton), for: .touchUpInside)
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapView)))
+    }
+    
+    // MARK: - Actions
+    @objc private func didTapPlusButton() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.sourceType = .photoLibrary
+        picker.allowsEditing = true
+        present(picker, animated: true)
+    }
+    
+    @objc private func didTapGoToChatButton() {
+        FirestoreService.shared.saveProfileWith(id: currentUser.uid,
+                                                email: currentUser.email!,
+                                                username: fullnameField.text,
+                                                avatarImage: fillImageView.circleImageView.image,
+                                                description: aboutMeField.text,
+                                                gender: genderSegmentedControl.titleForSegment(at: genderSegmentedControl.selectedSegmentIndex)) { result in
+            switch result {
+            case .success(let muser):
+                let tabBar = MainTabBarController(currentUser: muser)
+                tabBar.modalPresentationStyle = .fullScreen
+                self.present(tabBar, animated: true)
+            case .failure(let error):
+                self.showAlert(with: "Error!", and: error.localizedDescription)
+            }
+        }
+    }
+    
+    @objc private func didTapView() {
+        view.endEditing(true)
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate
+extension SetupProfileViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
+        fillImageView.circleImageView.image = image
     }
 }
 
@@ -43,7 +106,7 @@ extension SetupProfileViewController {
                                         axis: .vertical, spacing: 4)
         let aboutMeStack = UIStackView(arrangedSubviews: [aboutMeLabel, aboutMeField],
                                        axis: .vertical, spacing: 4)
-        let genderStack = UIStackView(arrangedSubviews: [genderLabel, segmentedControl],
+        let genderStack = UIStackView(arrangedSubviews: [genderLabel, genderSegmentedControl],
                                       axis: .vertical, spacing: 14)
         
         goToChatButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
@@ -81,24 +144,3 @@ extension SetupProfileViewController {
 
 
 
-
-// MARK: - SwiftUI
-import SwiftUI
-
-struct SetupVCControllerProvider: PreviewProvider {
-    static var previews: some View {
-        ContainerVeiw().edgesIgnoringSafeArea(.all)
-    }
-    
-    struct ContainerVeiw: UIViewControllerRepresentable {
-        let viewController = SetupProfileViewController()
-        
-        func makeUIViewController(context: Context) -> some UIViewController {
-            return viewController
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-            
-        }
-    }
-}

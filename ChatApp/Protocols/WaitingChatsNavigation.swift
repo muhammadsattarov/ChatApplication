@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+protocol WaitingChatsNavigation: AnyObject {
+    func removeWaitingChat(chat: MChat)
+    func chatToActive(chat: MChat)
+}
